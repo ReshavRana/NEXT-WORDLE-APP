@@ -9,6 +9,16 @@ const GuessInput = () => {
   const [wordStatus, setWordStatus] = useState(prevTr);
 
   const [prevTries, setprevTries] = useState(prevTr);
+  const [triesUsed, setTriesUsed] = useState(0);
+  const [gameOverStatus, setGameOverStatus] = useState("");
+
+  const onClickHandler = () => {
+    //reseting the game
+    setGameOverStatus(" ");
+    setTriesUsed(0);
+    setWordStatus(prevTr);
+    setprevTries(prevTr);
+  };
 
   const checkWordStatus = (word: any, secret: any) => {
     let temp = Array.from(" ".repeat(WORDSIZE));
@@ -44,8 +54,13 @@ const GuessInput = () => {
 
     if (e.key == "Enter") {
       if (ind == -1) {
+        setTriesUsed((t) => t + 1);
         //check the secret word
-        console.log(wordTyped.join("") === secretword);
+        if (wordTyped.join("") === secretword && triesUsed < NoOfTries) {
+          setGameOverStatus("Won");
+        } else if (triesUsed + 1 == NoOfTries) {
+          setGameOverStatus("loss");
+        }
 
         setprevTries((prev) => {
           const ar = [wordTyped, ...prev];
@@ -82,6 +97,27 @@ const GuessInput = () => {
 
     console.log("array is ", wordTyped);
   };
+  if (gameOverStatus === "Won") {
+    return (
+      <>
+        <div className="last-tries-wrapper">
+          Congatulations you guessed the word {secretword} correctly, <br />
+          you Won!!; <button onClick={onClickHandler} value={"newGame"} />
+        </div>
+      </>
+    );
+  }
+  if (gameOverStatus == "loss") {
+    return (
+      <>
+        <div className="last-tries-wrapper">
+          OOPs!! your tries to guess the word {secretword} correctly is over
+          <br />
+          you lost!!; <button onClick={onClickHandler} value={"newGame"} />
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <div tabIndex={0} className="guessInput-Div" onKeyDown={keyDownHandler}>
